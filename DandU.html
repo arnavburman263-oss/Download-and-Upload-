@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>D&U Apps</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
+    <style>
+        /* CSS3 Styling & Animations */
+        :root {
+            --orange-glow: #ff6600;
+            --orange-subtle: rgba(255, 102, 0, 0.4);
+            --glass-bg: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(255, 255, 255, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Orbitron', sans-serif;
+            color: white;
+        }
+
+        body {
+            /* Ultra Realistic Earth Background */
+            background: url('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?q=80&w=1920&auto=format&fit=crop') no-repeat center center fixed;
+            background-size: cover;
+            overflow: hidden; /* Prevent scrolling body directly, screens will handle overflow */
+        }
+
+        /* Glassmorphism Classes */
+        .glass-panel {
+            background: var(--glass-bg);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+        }
+
+        .btn-futuristic {
+            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            border: 1px solid var(--orange-glow);
+            color: white;
+            padding: 15px 30px;
+            font-size: 1.2rem;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            box-shadow: 0 0 10px rgba(255, 102, 0, 0.2);
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        .btn-futuristic:hover {
+            background: var(--orange-glow);
+            box-shadow: 0 0 20px var(--orange-glow), 0 0 40px var(--orange-glow);
+            transform: scale(1.05);
+        }
+
+        /* Pulsing animation for magnificence placeholder text */
+        @keyframes pulse {
+            0% { opacity: 0.4; text-shadow: 0 0 5px rgba(255,255,255,0.1); }
+            50% { opacity: 1; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+            100% { opacity: 0.4; text-shadow: 0 0 5px rgba(255,255,255,0.1); }
+        }
+
+        /* Screen Layouts */
+        .screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh; /* Changed from min-height to height */
+            display: none;
+            padding: 40px 20px;
+            flex-direction: column;
+            align-items: center;
+            overflow-y: auto; /* Handle internal scrolling per screen */
+        }
+
+        .screen.active {
+            display: flex;
+        }
+
+        /* Slide Animations */
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        @keyframes slideInLeft {
+            from { transform: translateX(-100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+
+        .slide-in { animation: slideInRight 0.5s forwards ease-out; }
+        .slide-back { animation: slideInLeft 0.5s forwards ease-out; }
+
+        /* Typography */
+        h1.cinematic-title {
+            font-size: 4rem;
+            font-weight: 900;
+            /* Added deep neon pulsing effect for 'magnificence' */
+            text-shadow: 0 0 10px var(--orange-glow), 0 0 20px var(--orange-glow), 0 0 40px rgba(255, 102, 0, 0.8), 0 0 60px rgba(255, 102, 0, 0.5);
+            margin-bottom: 50px;
+            text-align: center;
+            margin-top: 10vh;
+        }
+
+        h2.screen-title {
+            font-size: 2.5rem;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px var(--orange-glow);
+        }
+
+        /* Input Fields */
+        input[type="text"], input[type="file"] {
+            width: 100%;
+            padding: 15px;
+            margin-bottom: 20px;
+            background: rgba(0,0,0,0.3);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: white;
+            outline: none;
+            transition: border 0.3s;
+        }
+        
+        input[type="text"]::placeholder { color: rgba(255,255,255,0.6); }
+        input[type="text"]:focus { border-color: var(--orange-glow); }
+
+        /* App List & Details */
+        .app-container {
+            width: 100%;
+            max-width: 600px;
+        }
+        
+        .app-card {
+            padding: 20px;
+            margin-bottom: 20px;
+            cursor: pointer;
+            transition: transform 0.3s, border-color 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .app-card:hover {
+            transform: translateX(10px);
+            border-color: var(--orange-glow);
+        }
+
+        .app-banner {
+            width: 100%;
+            height: 200px;
+            background: url('https://images.unsplash.com/photo-1550745165-9bc0b252726f?q=80&w=800') center/cover;
+            border-radius: 15px;
+            margin-bottom: 20px;
+        }
+
+        .screenshots-container {
+            display: flex;
+            gap: 15px;
+            overflow-x: auto;
+            margin-top: 20px;
+            padding-bottom: 10px;
+        }
+
+        .screenshot {
+            width: 150px;
+            height: 250px;
+            background: #222;
+            border-radius: 10px;
+            flex-shrink: 0;
+            border: 1px solid var(--glass-border);
+        }
+
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: transparent;
+            border: none;
+            color: var(--orange-glow);
+            font-size: 1.2rem;
+            cursor: pointer;
+        }
+
+        /* Installation Modal Styles (D&U Theme) */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 1000;
+            display: none; /* Initially hidden */
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .modal-content {
+            padding: 40px;
+            text-align: center;
+            max-width: 400px;
+            border: 2px solid var(--orange-glow) !important; /* Emphasize border */
+            box-shadow: 0 0 30px var(--orange-subtle) !important;
+            transform: scale(0.9);
+            transition: transform 0.3s ease;
+        }
+
+        .modal-overlay.active .modal-content {
+            transform: scale(1);
+        }
+
+        .modal-content h3 {
+            color: var(--orange-glow);
+            margin-bottom: 20px;
+            letter-spacing: 2px;
+            font-size: 1.5rem;
+        }
+
+        .modal-content p {
+            color: rgba(255,255,255,0.8);
+            margin-bottom: 35px;
+            font-size: 1.1rem;
+            line-height: 1.5;
+            font-weight: 400;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+
+        .btn-modal {
+            margin-bottom: 0 !important;
+            padding: 10px 30px !important;
+            font-size: 1rem !important;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="home-screen" class="screen active slide-back">
+        <h1 class="cinematic-title">D&U Apps</h1>
+        <div class="glass-panel" style="padding: 40px; width: 100%; max-width: 400px; text-align: center;">
+            <button class="btn-futuristic" onclick="navigate('download-screen')">Download App</button>
+            <button class="btn-futuristic" onclick="navigate('upload-screen')">Upload App</button>
+        </div>
+    </div>
+
+    <div id="download-screen" class="screen">
+        <button class="back-btn" onclick="navigate('home-screen', true)">&#8592; Back</button>
+        <h2 class="screen-title">Download Terminal</h2> <div class="app-container glass-panel" style="padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 200px;">
+             <p style="color: rgba(255,255,255,0.5); font-size: 0.9rem; letter-spacing: 1px; text-align: center; animation: pulse 2s infinite;">Waiting for app connection... <br><span style="color: var(--orange-glow);">[DATASTREAM_NULL]</span></p>
+        </div>
+    </div>
+
+    <div id="app-detail-screen" class="screen">
+        <button class="back-btn" onclick="navigate('download-screen', true)">&#8592; Back</button>
+        
+        <div class="app-container glass-panel" style="padding: 30px;">
+            <div class="app-banner"></div>
+            <h2 style="margin-bottom: 10px;">Dummy Nexus</h2>
+            
+            <button id="download-action-btn" class="btn-futuristic" onclick="startDownload()">Download Now</button>
+            <p id="download-status" style="text-align: center; color: var(--orange-glow); margin-bottom: 20px; display: none;">Downloading...</p>
+
+            <h3 style="margin-top: 30px;">In-App UI</h3>
+            <div class="screenshots-container">
+                <img src="https://images.unsplash.com/photo-1616423640778-28d1b53229bd?w=150" class="screenshot" alt="UI 1">
+                <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=150" class="screenshot" alt="UI 2">
+                <img src="https://images.unsplash.com/photo-1526304640581-d334cdbbf45e?w=150" class="screenshot" alt="UI 3">
+            </div>
+        </div>
+    </div>
+
+    <div id="upload-screen" class="screen">
+        <button class="back-btn" onclick="navigate('home-screen', true)">&#8592; Back</button>
+        <h2 class="screen-title">Upload Hub</h2>
+        
+        <div class="glass-panel" style="padding: 40px; width: 100%; max-width: 500px;">
+            <button class="btn-futuristic" style="font-size: 1rem;">Upload your GDrive .apk File Link</button>
+            <input type="text" placeholder="Paste GDrive APK Link Here...">
+            
+            <input type="text" placeholder="Enter App Name...">
+            
+            <label style="display: block; margin-bottom: 5px; color: var(--orange-glow);">App Logo</label>
+            <input type="file" accept="image/*">
+
+            <label style="display: block; margin-bottom: 5px; color: var(--orange-glow);">App Banner</label>
+            <input type="file" accept="image/*">
+
+            <label style="display: block; margin-bottom: 5px; color: var(--orange-glow);">2-3 In-App UI Images</label>
+            <input type="file" accept="image/*" multiple>
+
+            <button class="btn-futuristic" style="margin-top: 20px;" onclick="alert('Upload structure created. Connecting to Firebase database required.')">Submit Application</button>
+        </div>
+    </div>
+
+    <div id="install-modal-overlay" class="modal-overlay">
+        <div class="glass-panel modal-content">
+            <h3>Installation Required</h3>
+            <p>Go to your file manager and install this app manually.</p>
+            <div class="modal-buttons">
+                <button class="btn-futuristic btn-modal" onclick="closeModal('install-modal-overlay')">OK</button>
+                <button class="btn-futuristic btn-modal" onclick="goToFileManager()">GO</button>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+        
+        const firebaseConfig = {
+            apiKey: "AIzaSyAWwPHG2zYus2biKcxMzshm5h1SbnPANwE",
+            authDomain: "d-and-u-b3fbd.firebaseapp.com",
+            projectId: "d-and-u-b3fbd",
+            storageBucket: "d-and-u-b3fbd.firebasestorage.app",
+            messagingSenderId: "558568906928",
+            appId: "1:558568906928:web:38df8e082ec49de0589b75"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        console.log("Firebase Initialized Successfully!");
+    </script>
+
+    <script>
+        // Navigation Logic (Keep as is)
+        function navigate(targetScreenId, isBack = false) {
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.classList.remove('active', 'slide-in', 'slide-back');
+            });
+            
+            const target = document.getElementById(targetScreenId);
+            target.classList.add('active');
+            target.classList.add(isBack ? 'slide-back' : 'slide-in');
+
+            // Reset download button if returning to app detail
+            if(targetScreenId === 'app-detail-screen') {
+                const btn = document.getElementById('download-action-btn');
+                btn.innerText = "Download Now";
+                btn.setAttribute("onclick", "startDownload()");
+                document.getElementById('download-status').style.display = "none";
+            }
+        }
+
+        // Download to Install Simulation Logic (Keep as is)
+        function startDownload() {
+            const btn = document.getElementById('download-action-btn');
+            const status = document.getElementById('download-status');
+            
+            btn.style.display = "none";
+            status.style.display = "block";
+
+            // Simulating download time (3 seconds)
+            setTimeout(() => {
+                status.style.display = "none";
+                btn.style.display = "block";
+                btn.innerText = "Install Now";
+                
+                // Change action to simulated install
+                btn.setAttribute("onclick", "installApp()");
+            }, 3000);
+        }
+
+        // Replaced alert() with Custom Modal logic
+        function installApp() {
+            // Replaced default popup with custom themed modal
+            // alert("App downloaded! Check your browser's download folder to install the APK onto your home screen.");
+            showModal('install-modal-overlay');
+        }
+
+        // Modal Utility Functions
+        function showModal(modalId) {
+            document.getElementById(modalId).classList.add('active');
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function goToFileManager() {
+            // Standard web browsers cannot launch native file manager apps directly due to security.
+            // For now, this acts as an 'Acknowledge' button that closes the modal.
+            console.log("Go button pressed (browser file manager restriction applies).");
+            closeModal('install-modal-overlay');
+        }
+    </script>
+</body>
+</html>
